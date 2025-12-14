@@ -65,7 +65,7 @@ echo System Ready. Auto-launching...
 echo ========================================================
 timeout /t 2 /nobreak >nul
 
-python main.py > launch_log.txt 2>&1
+python app_v2.py > launch_log.txt 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo ========================================================
