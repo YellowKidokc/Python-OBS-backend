@@ -1,0 +1,16 @@
+{
+  "priority": [
+    "stanford",
+    "iep",
+    "oxford",
+    "cambridge",
+    "philpapers",
+    "philarchive",
+    "scholar",
+    "jstor",
+    "muse",
+    "britannica",
+    "arxiv",
+    "wikipedia"
+  ]
+}

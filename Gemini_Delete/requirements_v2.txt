@@ -1,0 +1,22 @@
+# Definition 2.0 Additional Requirements
+# Add these to your existing requirements.txt
+
+# Web scraping & content extraction
+beautifulsoup4>=4.12.0
+markdownify>=0.11.6
+lxml>=4.9.0
+
+# PDF processing (optional but recommended)
+PyMuPDF>=1.23.0
+
+# HTTP requests
+requests>=2.31.0
+
+# Parallel processing (built-in, but ensure Python 3.10+)
+# multiprocessing (built-in)
+
+# YAML parsing (if not already installed)
+PyYAML>=6.0
+
+# Progress bars (optional)
+tqdm>=4.66.0

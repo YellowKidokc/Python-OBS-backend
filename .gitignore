@@ -1,0 +1,101 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv
+pipenv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Application Data
+theophysics_config.json
+*.db
+*.db-journal
+*.log
+*.sqlite
+*.sqlite3
+
+# AI & Secrets (NEVER commit!)
+.env
+.env.local
+*.pem
+*.key
+credentials.json
+secrets.json
+*_key.json
+openai_key.txt
+anthropic_key.txt
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Documentation builds
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~.nib
+*.orig
+
+# Large files (don't commit large datasets)
+*.csv
+*.tsv
+aggregated_data_*.json
+
+# Replit
+.replit
+replit.nix
+.upm/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
