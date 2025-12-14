@@ -65,19 +65,25 @@ echo System Ready. Auto-launching...
 echo ========================================================
 timeout /t 2 /nobreak >nul
 
-python main.py
+python main.py > launch_log.txt 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo ========================================================
     echo [APP CRASH] The application exited with errors.
+    echo errors are logged to 'launch_log.txt'. Here is the content:
+    echo --------------------------------------------------------
+    type launch_log.txt
+    echo --------------------------------------------------------
     echo FIX: Read the traceback above. Common issues:
     echo      - Database locked (close DB tools)
     echo      - Missing assets (check paths)
     echo      - API Key issues (check env vars)
+    echo      - VC++ Redistributable missing (install it)
     echo ========================================================
 ) else (
     echo.
     echo [INFO] Application closed successfully.
+    echo [LOG] Run details saved to launch_log.txt
 )
 
 :ErrorExit
