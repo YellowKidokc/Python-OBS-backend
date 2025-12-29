@@ -1,0 +1,50 @@
+{
+  "endpoints": [
+    {
+      "id": "e3c63e82-8864-47bd-9f8a-fe25d7d03635",
+      "name": "US Census ACS",
+      "url": "https://api.census.gov/data/2022/acs/acs5",
+      "method": "GET",
+      "headers": {},
+      "default_params": {
+        "get": "NAME",
+        "for": "state:*"
+      },
+      "description": "",
+      "created_at": "2025-12-24T16:31:41.979074",
+      "last_used": "2025-12-24T16:31:42.732076",
+      "use_count": 1
+    },
+    {
+      "id": "04ed349c-e2fa-4286-98b3-076ae41912ec",
+      "name": "US Census ACS",
+      "url": "https://api.census.gov/data/2022/acs/acs5",
+      "method": "GET",
+      "headers": {},
+      "default_params": {
+        "get": "NAME",
+        "for": "state:*"
+      },
+      "description": "",
+      "created_at": "2025-12-24T16:32:13.387889",
+      "last_used": "2025-12-24T16:32:14.178921",
+      "use_count": 1
+    },
+    {
+      "id": "62ace4e1-27bd-487c-b477-112988390e14",
+      "name": "\u2764\ufe0f HeartMath/HRV Research",
+      "url": "https://api.semanticscholar.org/graph/v1/paper/search",
+      "method": "GET",
+      "headers": {},
+      "default_params": {
+        "query": "HeartMath HRV coherence",
+        "fields": "title,abstract,authors,year,citationCount,venue",
+        "limit": 25
+      },
+      "description": "",
+      "created_at": "2025-12-24T16:38:01.916943",
+      "last_used": "2025-12-24T17:26:16.689999",
+      "use_count": 4
+    }
+  ]
+}

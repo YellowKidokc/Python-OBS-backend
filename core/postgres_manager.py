@@ -15,11 +15,11 @@ from datetime import datetime
 @dataclass
 class DatabaseConfig:
     """PostgreSQL connection configuration."""
-    host: str = "localhost"
-    port: int = 5432
-    database: str = "theophysics_research"
-    user: str = "postgres"
-    password: str = ""
+    host: str = "192.168.1.177"
+    port: int = 2665
+    database: str = "Theophysics"
+    user: str = "Yellowkid"
+    password: str = "Moss9pep28$"
 
 
 class PostgresManager:

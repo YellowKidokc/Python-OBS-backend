@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "description": "Theophysics paper configuration - edit this file to add/modify papers",
+  "papers": [
+    {
+      "id": "P01",
+      "name": "Logos Principle",
+      "display": "P01 - Logos Principle",
+      "folder": "P01_Logos_Principle"
+    },
+    {
+      "id": "P02",
+      "name": "Quantum Bridge",
+      "display": "P02 - Quantum Bridge",
+      "folder": "P02_Quantum_Bridge"
+    },
+    {
+      "id": "P03",
+      "name": "Algorithm Reality",
+      "display": "P03 - Algorithm Reality",
+      "folder": "P03_Algorithm_Reality"
+    },
+    {
+      "id": "P04",
+      "name": "Hard Problem",
+      "display": "P04 - Hard Problem",
+      "folder": "P04_Hard_Problem"
+    },
+    {
+      "id": "P05",
+      "name": "Soul Observer",
+      "display": "P05 - Soul Observer",
+      "folder": "P05_Soul_Observer"
+    },
+    {
+      "id": "P06",
+      "name": "Physics Principalities",
+      "display": "P06 - Physics Principalities",
+      "folder": "P06_Physics_Principalities"
+    },
+    {
+      "id": "P07",
+      "name": "Grace Function",
+      "display": "P07 - Grace Function",
+      "folder": "P07_Grace_Function"
+    },
+    {
+      "id": "P08",
+      "name": "Stretched Heavens",
+      "display": "P08 - Stretched Heavens",
+      "folder": "P08_Stretched_Heavens"
+    },
+    {
+      "id": "P09",
+      "name": "Moral Universe",
+      "display": "P09 - Moral Universe",
+      "folder": "P09_Moral_Universe"
+    },
+    {
+      "id": "P10",
+      "name": "Creatio Silico",
+      "display": "P10 - Creatio Silico",
+      "folder": "P10_Creatio_Silico"
+    },
+    {
+      "id": "P11",
+      "name": "Protocols Validation",
+      "display": "P11 - Protocols Validation",
+      "folder": "P11_Protocols_Validation"
+    },
+    {
+      "id": "P12",
+      "name": "Decalogue Cosmos",
+      "display": "P12 - Decalogue Cosmos",
+      "folder": "P12_Decalogue_Cosmos"
+    }
+  ]
+}

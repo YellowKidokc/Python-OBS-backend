@@ -250,8 +250,10 @@ class ScanWorker(QThread):
             
             # Finalize
             result.duration_seconds = (datetime.now() - start_time).total_seconds()
+            print(f"[SCANNER DEBUG] Scan complete: {result.total_files} files, {result.total_words} words, emitting finished signal...")
             self.progress.emit(100, "Complete")
             self.finished.emit(result)
+            print(f"[SCANNER DEBUG] Finished signal emitted")
             
         except Exception as e:
             self.error.emit(f"Scan failed: {type(e).__name__}: {str(e)}")

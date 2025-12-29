@@ -433,6 +433,30 @@ QLabel[class="error"] {{
 }}
 
 /* ============================================
+   LINKS - No underlines, color only
+   ============================================ */
+
+QLabel a {{
+    color: {COLORS['accent_cyan']};
+    text-decoration: none;
+}}
+
+QTextEdit a, QPlainTextEdit a {{
+    color: {COLORS['accent_cyan']};
+    text-decoration: none;
+}}
+
+/* For QTextBrowser if used */
+QTextBrowser a {{
+    color: {COLORS['accent_cyan']};
+    text-decoration: none;
+}}
+
+QTextBrowser a:hover {{
+    color: {COLORS['accent_blue']};
+}}
+
+/* ============================================
    SPLITTERS
    ============================================ */
 

@@ -27,6 +27,7 @@ from engine.structure_engine import StructureEngine
 from engine.database_engine import DatabaseEngine
 from engine.ai_engine import AIEngine
 from engine.ontology_engine import OntologyEngine
+from engine.math_translation_engine import MathTranslationEngine
 
 
 class TheophysicsManager(QMainWindow):
@@ -47,6 +48,7 @@ class TheophysicsManager(QMainWindow):
         self.struct_engine = StructureEngine(self.settings_mgr, self.db_engine)
         self.ai_engine = AIEngine(self.settings_mgr, self.db_engine)
         self.onto_engine = OntologyEngine(self.settings_mgr, self.db_engine)
+        self.math_engine = MathTranslationEngine(self.settings_mgr, self.db_engine)
 
         self._init_ui()
 
@@ -223,7 +225,7 @@ class TheophysicsManager(QMainWindow):
         nav_items = [
             ("Vault", 0),
             ("Definitions", 1),
-            ("Research", 2),
+            ("Math Translation", 2),
             ("Ontology", 3),
             ("AI Features", 4),
             ("Structure", 5),
@@ -258,7 +260,7 @@ class TheophysicsManager(QMainWindow):
         self.pages = QStackedWidget()
         self.pages.addWidget(self._build_vault_page())
         self.pages.addWidget(self._build_definitions_page())
-        self.pages.addWidget(self._build_research_page())
+        self.pages.addWidget(self._build_math_translation_page())
         self.pages.addWidget(self._build_ontology_page())
         self.pages.addWidget(self._build_ai_page())
         self.pages.addWidget(self._build_structure_page())
@@ -494,81 +496,7 @@ class TheophysicsManager(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Save failed: {e}")
 
-    # PAGE 2: RESEARCH
-    def _build_research_page(self) -> QWidget:
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(24, 24, 24, 24)
-
-        header = QLabel("Research Links")
-        header.setStyleSheet("font-size: 20px; font-weight: bold; color: #00d9ff;")
-        layout.addWidget(header)
-
-        link_box = QGroupBox("Add Custom Research Link")
-        link_layout = QHBoxLayout(link_box)
-        
-        self.link_term_edit = QLineEdit()
-        self.link_term_edit.setPlaceholderText("Term...")
-        self.link_source_edit = QLineEdit()
-        self.link_source_edit.setPlaceholderText("Source...")
-        self.link_url_edit = QLineEdit()
-        self.link_url_edit.setPlaceholderText("URL...")
-        
-        add_btn = QPushButton("Add")
-        add_btn.clicked.connect(self._add_research_link)
-        
-        link_layout.addWidget(self.link_term_edit)
-        link_layout.addWidget(self.link_source_edit)
-        link_layout.addWidget(self.link_url_edit)
-        link_layout.addWidget(add_btn)
-        
-        layout.addWidget(link_box)
-
-        proc_box = QGroupBox("Link Processor")
-        proc_layout = QVBoxLayout(proc_box)
-        
-        self.rl_input_edit = QTextEdit()
-        self.rl_input_edit.setPlaceholderText("Paste text here...")
-        self.rl_input_edit.setMaximumHeight(120)
-        proc_layout.addWidget(QLabel("Input Text:"))
-        proc_layout.addWidget(self.rl_input_edit)
-        
-        self.rl_terms_edit = QLineEdit()
-        self.rl_terms_edit.setPlaceholderText("term1, term2...")
-        proc_layout.addWidget(QLabel("Terms:"))
-        proc_layout.addWidget(self.rl_terms_edit)
-        
-        process_btn = QPushButton("Process Links")
-        process_btn.clicked.connect(self._process_research_links)
-        proc_layout.addWidget(process_btn)
-        
-        self.rl_output_edit = QTextEdit()
-        self.rl_output_edit.setReadOnly(True)
-        proc_layout.addWidget(QLabel("Output:"))
-        proc_layout.addWidget(self.rl_output_edit)
-        
-        layout.addWidget(proc_box)
-        
-        return page
-
-    def _add_research_link(self):
-        try:
-            self.rl_engine.add_custom_link(
-                term=self.link_term_edit.text().strip(),
-                source=self.link_source_edit.text().strip(),
-                url=self.link_url_edit.text().strip(),
-            )
-            self.link_term_edit.clear()
-            self.link_source_edit.clear()
-            self.link_url_edit.clear()
-        except Exception as e:
-            QMessageBox.warning(self, "Error", str(e))
-
-    def _process_research_links(self):
-        text = self.rl_input_edit.toPlainText()
-        terms = [t.strip() for t in self.rl_terms_edit.text().split(",") if t.strip()]
-        out = self.rl_engine.process_text_links(text, terms)
-        self.rl_output_edit.setPlainText(out)
+    # PAGE 2: MATH TRANSLATION (Replaces old Research/Paper Scanner tab)
 
     # PAGE 3: ONTOLOGY
     def _build_ontology_page(self) -> QWidget:
@@ -834,6 +762,257 @@ class TheophysicsManager(QMainWindow):
             QMessageBox.information(self, "Done", "Structure injected.")
         except Exception as e:
             QMessageBox.warning(self, "Error", str(e))
+
+    # Math Translation Page Implementation
+    def _build_math_translation_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(24, 24, 24, 24)
+
+        header = QLabel("Math Translation Layer")
+        header.setStyleSheet("font-size: 20px; font-weight: bold; color: #00d9ff;")
+        layout.addWidget(header)
+
+        stats_box = QGroupBox("Translation Table Status")
+        stats_layout = QVBoxLayout(stats_box)
+        
+        self.math_stats_label = QLabel("Loading...")
+        self.math_stats_label.setObjectName("metricsLabel")
+        stats_layout.addWidget(self.math_stats_label)
+        
+        reload_btn = QPushButton("Reload Translation Table")
+        reload_btn.clicked.connect(self._reload_math_table)
+        stats_layout.addWidget(reload_btn)
+        
+        layout.addWidget(stats_box)
+        
+        self._update_math_stats()
+
+        scan_box = QGroupBox("Document Scanner")
+        scan_layout = QVBoxLayout(scan_box)
+        
+        input_row = QHBoxLayout()
+        self.math_input_folder = QLineEdit()
+        self.math_input_folder.setPlaceholderText("Select folder with markdown documents...")
+        browse_input_btn = QPushButton("Browse")
+        browse_input_btn.clicked.connect(self._browse_math_input)
+        input_row.addWidget(QLabel("Input Folder:"))
+        input_row.addWidget(self.math_input_folder, 1)
+        input_row.addWidget(browse_input_btn)
+        scan_layout.addLayout(input_row)
+        
+        output_row = QHBoxLayout()
+        self.math_output_folder = QLineEdit()
+        self.math_output_folder.setPlaceholderText("Select output folder...")
+        browse_output_btn = QPushButton("Browse")
+        browse_output_btn.clicked.connect(self._browse_math_output)
+        output_row.addWidget(QLabel("Output Folder:"))
+        output_row.addWidget(self.math_output_folder, 1)
+        output_row.addWidget(browse_output_btn)
+        scan_layout.addLayout(output_row)
+        
+        process_btn = QPushButton("Process Documents")
+        process_btn.setObjectName("primaryBtn")
+        process_btn.clicked.connect(self._process_math_documents)
+        scan_layout.addWidget(process_btn)
+        
+        self.math_progress = QProgressBar()
+        self.math_progress.setVisible(False)
+        scan_layout.addWidget(self.math_progress)
+        
+        layout.addWidget(scan_box)
+
+        results_box = QGroupBox("Processing Results")
+        results_layout = QVBoxLayout(results_box)
+        
+        self.math_results_text = QTextEdit()
+        self.math_results_text.setReadOnly(True)
+        self.math_results_text.setMaximumHeight(200)
+        self.math_results_text.setPlaceholderText("Results will appear here after processing...")
+        results_layout.addWidget(self.math_results_text)
+        
+        layout.addWidget(results_box)
+
+        tts_box = QGroupBox("TTS Audio Generation")
+        tts_layout = QVBoxLayout(tts_box)
+        
+        file_row = QHBoxLayout()
+        self.math_tts_file = QLineEdit()
+        self.math_tts_file.setPlaceholderText("Select processed document for TTS...")
+        browse_tts_btn = QPushButton("Browse")
+        browse_tts_btn.clicked.connect(self._browse_math_tts)
+        file_row.addWidget(self.math_tts_file, 1)
+        file_row.addWidget(browse_tts_btn)
+        tts_layout.addLayout(file_row)
+        
+        tts_btn_row = QHBoxLayout()
+        preview_btn = QPushButton("Preview TTS Text")
+        preview_btn.clicked.connect(self._preview_tts_text)
+        generate_btn = QPushButton("Generate Audio")
+        generate_btn.clicked.connect(self._generate_tts_audio)
+        tts_btn_row.addWidget(preview_btn)
+        tts_btn_row.addWidget(generate_btn)
+        tts_btn_row.addStretch()
+        tts_layout.addLayout(tts_btn_row)
+        
+        self.math_tts_preview = QTextEdit()
+        self.math_tts_preview.setReadOnly(True)
+        self.math_tts_preview.setMaximumHeight(150)
+        self.math_tts_preview.setPlaceholderText("TTS text preview will appear here...")
+        tts_layout.addWidget(self.math_tts_preview)
+        
+        layout.addWidget(tts_box)
+        
+        layout.addStretch()
+        return page
+
+    def _update_math_stats(self):
+        try:
+            stats = self.math_engine.get_statistics()
+            self.math_stats_label.setText(
+                f"Translation Table: {'Loaded' if stats['table_loaded'] else 'Not Loaded'}  |  "
+                f"Entries: {stats['total_translations']}  |  "
+                f"Excel: {'Found' if stats['excel_exists'] else 'Missing'}"
+            )
+            if not stats['table_loaded']:
+                self.math_stats_label.setStyleSheet("color: #e94560;")
+            else:
+                self.math_stats_label.setStyleSheet("")
+        except Exception as e:
+            self.math_stats_label.setText(f"Error: {e}")
+            self.math_stats_label.setStyleSheet("color: #e94560;")
+
+    def _reload_math_table(self):
+        try:
+            success = self.math_engine.load_translation_table()
+            self._update_math_stats()
+            if success:
+                QMessageBox.information(self, "Success", "Translation table reloaded successfully.")
+            else:
+                QMessageBox.warning(self, "Failed", "Failed to reload translation table.")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Error reloading table: {e}")
+
+    def _browse_math_input(self):
+        path = QFileDialog.getExistingDirectory(self, "Select Input Folder")
+        if path:
+            self.math_input_folder.setText(path)
+
+    def _browse_math_output(self):
+        path = QFileDialog.getExistingDirectory(self, "Select Output Folder")
+        if path:
+            self.math_output_folder.setText(path)
+
+    def _browse_math_tts(self):
+        path, _ = QFileDialog.getOpenFileName(self, "Select Processed Document", filter="Markdown (*.md)")
+        if path:
+            self.math_tts_file.setText(path)
+
+    def _process_math_documents(self):
+        input_folder = self.math_input_folder.text().strip()
+        output_folder = self.math_output_folder.text().strip()
+        
+        if not input_folder or not output_folder:
+            QMessageBox.warning(self, "Missing Paths", "Please select both input and output folders.")
+            return
+        
+        input_path = Path(input_folder)
+        output_path = Path(output_folder)
+        
+        if not input_path.exists():
+            QMessageBox.warning(self, "Invalid Path", f"Input folder does not exist:\n{input_folder}")
+            return
+        
+        self.math_progress.setVisible(True)
+        self.math_progress.setRange(0, 0)
+        self.math_results_text.setPlainText("Processing documents...")
+        QApplication.processEvents()
+        
+        try:
+            results = self.math_engine.process_folder(input_path, output_path)
+            
+            result_text = f"Processing Complete!\n\n"
+            result_text += f"Total Files: {results['total_files']}\n"
+            result_text += f"Processed: {results['processed']}\n"
+            result_text += f"Failed: {results['failed']}\n\n"
+            result_text += f"Total Equations Found: {results['total_equations']}\n"
+            result_text += f"Translated: {results['total_translated']}\n"
+            result_text += f"Untranslated: {results['total_untranslated']}\n\n"
+            result_text += f"Output saved to: {output_folder}\n\n"
+            
+            if results['failed'] > 0:
+                result_text += "Failed files:\n"
+                for file_result in results['files']:
+                    if not file_result['success']:
+                        result_text += f"  - {file_result['input_path']}: {file_result.get('error', 'Unknown error')}\n"
+            
+            self.math_results_text.setPlainText(result_text)
+            
+            QMessageBox.information(
+                self, 
+                "Processing Complete", 
+                f"Processed {results['processed']} files with {results['total_translated']} equations translated."
+            )
+            
+        except Exception as e:
+            error_msg = f"Processing failed: {str(e)}\n\n{traceback.format_exc()}"
+            self.math_results_text.setPlainText(error_msg)
+            QMessageBox.critical(self, "Processing Error", f"Error during processing:\n\n{str(e)}")
+        
+        finally:
+            self.math_progress.setVisible(False)
+
+    def _preview_tts_text(self):
+        file_path = self.math_tts_file.text().strip()
+        if not file_path:
+            QMessageBox.warning(self, "No File", "Please select a processed document.")
+            return
+        
+        if not Path(file_path).exists():
+            QMessageBox.warning(self, "Invalid Path", f"File does not exist:\n{file_path}")
+            return
+        
+        try:
+            tts_text = self.math_engine.generate_tts_text(Path(file_path))
+            self.math_tts_preview.setPlainText(tts_text)
+        except Exception as e:
+            self.math_tts_preview.setPlainText(f"Error generating preview: {e}")
+
+    def _generate_tts_audio(self):
+        file_path = self.math_tts_file.text().strip()
+        if not file_path:
+            QMessageBox.warning(self, "No File", "Please select a processed document.")
+            return
+        
+        if not Path(file_path).exists():
+            QMessageBox.warning(self, "Invalid Path", f"File does not exist:\n{file_path}")
+            return
+        
+        try:
+            # Generate TTS text
+            tts_text = self.math_engine.generate_tts_text(Path(file_path))
+            
+            # Save to TTS pipeline INBOX
+            tts_pipeline_path = Path("O:/Theophysics_Backend/TTS_Pipeline")
+            inbox_path = tts_pipeline_path / "INBOX"
+            inbox_path.mkdir(exist_ok=True)
+            
+            # Create output filename
+            input_name = Path(file_path).stem
+            output_file = inbox_path / f"{input_name}_tts.txt"
+            
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(tts_text)
+            
+            QMessageBox.information(
+                self,
+                "TTS Text Saved",
+                f"TTS text saved to:\n{output_file}\n\n"
+                f"Run the TTS pipeline to generate audio."
+            )
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to generate TTS text:\n\n{str(e)}")
 
     # PAGE 6: DATABASE
     def _build_database_page(self) -> QWidget:

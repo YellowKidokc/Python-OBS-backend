@@ -23,3 +23,8 @@ from .enhanced_definition_engine import (
     ExternalComparator,
 )
 
+from .stage_engine import (
+    StageEngine,
+    create_stage,
+)
+

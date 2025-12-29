@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python sync_folders.py:*)",
+      "Bash(dir /AL /S)",
+      "Bash(cmd /c \"dir /AL /S \"\"C:\\\\Users\\\\lowes\\\\OneDrive\\\\Documents\\\\Theophysics Master\"\"\")",
+      "Bash(robocopy:*)",
+      "Bash(powershell:*)"
+    ]
+  }
+}

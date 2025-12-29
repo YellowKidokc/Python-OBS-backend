@@ -15,6 +15,7 @@ import sqlite3
 import numpy as np
 from pathlib import Path
 import json
+import requests
 
 
 class AIEngine:
@@ -38,6 +39,10 @@ class AIEngine:
         
         # Initialize embedding cache
         self.embedding_cache: Dict[str, List[float]] = {}
+        
+        # Check Ollama availability
+        self.ollama_available = self._check_ollama()
+        self.ollama_model = "llama3.2"  # Default model, can be changed
     
     def _check_openai(self) -> bool:
         """Check if OpenAI library is available."""
@@ -60,12 +65,139 @@ class AIEngine:
         except ImportError:
             return False
     
+    def _check_ollama(self) -> bool:
+        """Check if Ollama is running locally."""
+        try:
+            response = requests.get("http://localhost:11434/api/tags", timeout=2)
+            return response.status_code == 200
+        except:
+            return False
+    
+    def list_ollama_models(self) -> List[str]:
+        """List available Ollama models."""
+        if not self.ollama_available:
+            return []
+        try:
+            response = requests.get("http://localhost:11434/api/tags", timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                return [m["name"] for m in data.get("models", [])]
+        except:
+            pass
+        return []
+    
+    def generate_with_ollama(self, prompt: str, model: str = None) -> str:
+        """
+        Generate text using local Ollama instance.
+        Great for YAML generation and quick tasks without API costs.
+        """
+        if not self.ollama_available:
+            return "(Ollama not available - is it running?)"
+        
+        model = model or self.ollama_model
+        
+        try:
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json={
+                    "model": model,
+                    "prompt": prompt,
+                    "stream": False
+                },
+                timeout=60
+            )
+            if response.status_code == 200:
+                return response.json().get("response", "")
+            else:
+                return f"(Ollama error: {response.status_code})"
+        except Exception as e:
+            return f"(Ollama error: {e})"
+    
+    def generate_yaml_frontmatter(self, note_content: str, note_type: str = "auto") -> str:
+        """
+        Use Ollama to auto-generate YAML frontmatter for a note.
+        This is the key integration for automatic YAML generation.
+        
+        Args:
+            note_content: The content of the note
+            note_type: Hint for type (stage/axiom/theorem/definition/claim/evidence/auto)
+        
+        Returns:
+            YAML frontmatter string (without --- delimiters)
+        """
+        type_hint = "" if note_type == "auto" else f"The note type should be: {note_type}"
+        
+        prompt = f"""You are a YAML frontmatter generator for an academic Theophysics framework.
+Analyze the note content and generate appropriate YAML frontmatter.
+
+Rules:
+- Return ONLY valid YAML, no markdown code blocks, no explanation
+- Generate a UUID in format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+- Identify the type: stage, axiom, theorem, definition, claim, evidence, or note
+- Extract relevant tags from content
+- Identify domains: physics, theology, information-theory, consciousness, mathematics
+- Set status to: draft
+
+{type_hint}
+
+Note content:
+{note_content[:1500]}
+
+YAML frontmatter:"""
+
+        result = self.generate_with_ollama(prompt)
+        
+        # Clean up response
+        result = result.strip()
+        if result.startswith("```"):
+            lines = result.split("\n")
+            result = "\n".join(lines[1:-1] if lines[-1] == "```" else lines[1:])
+        if result.startswith("yaml"):
+            result = result[4:].strip()
+        
+        return result
+    
+    def classify_semantic_content(self, text: str) -> Dict[str, Any]:
+        """
+        Use Ollama to classify content for semantic tagging.
+        Returns classifications matching the SEMANTIC MARKUP PROTOCOL.
+        """
+        prompt = f"""Classify this text for a Theophysics knowledge base.
+Return a JSON object with "classifications" array.
+
+Categories to use:
+- Foundational: terms, axioms, theorem, postulate
+- Evidence: claims, evidence, hypothesis
+- Argumentation: objection, response, synthesis
+- Connections: relationship, bridge, implication
+- Framework: dark (paradox), light (resolved), trinity (3-part pattern)
+- Math: equation, variable, law
+
+Text:
+{text[:1000]}
+
+Return ONLY valid JSON:"""
+
+        result = self.generate_with_ollama(prompt)
+        
+        try:
+            # Clean and parse JSON
+            result = result.strip()
+            if result.startswith("```"):
+                result = result.split("```")[1]
+                if result.startswith("json"):
+                    result = result[4:]
+            return json.loads(result)
+        except:
+            return {"classifications": []}
+    
     def is_available(self) -> Dict[str, bool]:
         """Check which AI services are available."""
         return {
             "openai": self.openai_available,
             "anthropic": self.anthropic_available,
-            "any": self.openai_available or self.anthropic_available
+            "ollama": self.ollama_available,
+            "any": self.openai_available or self.anthropic_available or self.ollama_available
         }
 
     def embed_text(self, text: str, use_cache: bool = True) -> List[float]:
@@ -370,7 +502,9 @@ Summary:"""
         status = {
             "openai_available": self.openai_available,
             "anthropic_available": self.anthropic_available,
+            "ollama_available": self.ollama_available,
             "model_name": self.model_name,
+            "ollama_model": self.ollama_model if self.ollama_available else None,
             "embedding_cache_size": len(self.embedding_cache),
         }
         
@@ -381,6 +515,9 @@ Summary:"""
         if self.anthropic_available:
             import os
             status["anthropic_key_set"] = bool(os.getenv("ANTHROPIC_API_KEY"))
+        
+        if self.ollama_available:
+            status["ollama_models"] = self.list_ollama_models()
         
         return status
 

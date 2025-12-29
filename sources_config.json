@@ -1,0 +1,74 @@
+{
+  "source_priority": [
+    {
+      "rank": 1,
+      "name": "Stanford Encyclopedia of Philosophy",
+      "url_pattern": "https://plato.stanford.edu/entries/",
+      "enabled": true,
+      "category": "academic_primary"
+    },
+    {
+      "rank": 2,
+      "name": "Internet Encyclopedia of Philosophy (IEP)",
+      "url_pattern": "https://www.iep.utm.edu/",
+      "enabled": true,
+      "category": "academic_primary"
+    },
+    {
+      "rank": 3,
+      "name": "PhilPapers - Philosophy Research",
+      "url_pattern": "https://philpapers.org/",
+      "enabled": true,
+      "category": "academic_primary"
+    },
+    {
+      "rank": 4,
+      "name": "Stanford Quantum Mechanics (Specialized)",
+      "url_pattern": "https://plato.stanford.edu/entries/qt-",
+      "enabled": true,
+      "category": "academic_specialized"
+    },
+    {
+      "rank": 5,
+      "name": "Cambridge Companions Online",
+      "url_pattern": "https://www.cambridge.org/core/journals/",
+      "enabled": true,
+      "category": "academic_specialized"
+    },
+    {
+      "rank": 6,
+      "name": "SEP - Consciousness Studies",
+      "url_pattern": "https://plato.stanford.edu/entries/consciousness-",
+      "enabled": true,
+      "category": "academic_specialized"
+    },
+    {
+      "rank": 7,
+      "name": "Journal of Theoretical Biology",
+      "url_pattern": "https://www.journals.elsevier.com/journal-of-theoretical-biology",
+      "enabled": true,
+      "category": "journal_peer_reviewed"
+    },
+    {
+      "rank": 8,
+      "name": "Physical Review Letters",
+      "url_pattern": "https://journals.aps.org/prl/",
+      "enabled": true,
+      "category": "journal_peer_reviewed"
+    },
+    {
+      "rank": 99,
+      "name": "Wikipedia (Last Resort Only)",
+      "url_pattern": "https://en.wikipedia.org/wiki/",
+      "enabled": true,
+      "category": "fallback",
+      "note": "Use only if nothing else available"
+    }
+  ],
+  "fallback_strategy": "cascade",
+  "require_academic_source": true,
+  "allow_wikipedia_only_if": {
+    "no_academic_found": true,
+    "academic_found_but_weak": false
+  }
+}

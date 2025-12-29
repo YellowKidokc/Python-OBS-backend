@@ -1,0 +1,59 @@
+{
+  "source_priority": [
+    {
+      "rank": 1,
+      "name": "Stanford Encyclopedia of Philosophy",
+      "url_pattern": "https://plato.stanford.edu/search/searcher.py?query={term}",
+      "enabled": true,
+      "category": "High-Value Academic",
+      "note": "Primary source for Ontological and Foundational terms."
+    },
+    {
+      "rank": 2,
+      "name": "Internet Encyclopedia of Philosophy",
+      "url_pattern": "https://iep.utm.edu/?s={term}",
+      "enabled": true,
+      "category": "High-Value Academic",
+      "note": "Secondary academic source."
+    },
+    {
+      "rank": 3,
+      "name": "arXiv",
+      "url_pattern": "https://arxiv.org/search/?query={term}&searchtype=all",
+      "enabled": true,
+      "category": "Physics/Math",
+      "note": "Primary source for technical/quantum papers."
+    },
+    {
+      "rank": 4,
+      "name": "Scholarpedia",
+      "url_pattern": "http://www.scholarpedia.org/article/Special:Search?search={term}",
+      "enabled": true,
+      "category": "Peer-Reviewed",
+      "note": "Good for Neuroscience and Complexity."
+    },
+    {
+      "rank": 5,
+      "name": "PhilPapers",
+      "url_pattern": "https://philpapers.org/s/{term}",
+      "enabled": true,
+      "category": "Academic Index",
+      "note": "Broad philosophy coverage."
+    },
+    {
+      "rank": 6,
+      "name": "Wikipedia",
+      "url_pattern": "https://en.wikipedia.org/wiki/{term}",
+      "enabled": true,
+      "category": "General",
+      "note": "Fallback only. Low signal weight."
+    }
+  ],
+  "blacklist": [
+    "David Lowe",
+    "David Lee",
+    "theophysics",
+    "Untitled",
+    "index"
+  ]
+}
